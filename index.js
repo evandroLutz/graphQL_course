@@ -1,10 +1,12 @@
 const { ApolloServer, gql } = require('apollo-server');
 
 const users = [
-  { id: '1', name: 'Alice', email: 'alice@example.com' },
-  { id: '2', name: 'Bob', email: 'bob@example.com' },
-  { id: '3', name: 'Charlie', email: 'charlie@example.com' },
+  { id: '1', name: 'Alice', email: 'alice@example.com', profile: { id: '1' }},
+  { id: '2', name: 'Bob', email: 'bob@example.com', profile: { id: '2'}},
+  { id: '3', name: 'Charlie', email: 'charlie@example.com', profile: { id: '2'} },
 ];
+
+const profiles = [{ id: '1', name: 'Administrator' }, { id: '2', name: 'Regular User' }];
 
 const typeDefs = gql`
   scalar Date
@@ -16,6 +18,12 @@ const typeDefs = gql`
     age: Int
     salary: Float
     vip: Boolean
+    profile: Profile!
+  }
+
+  type Profile {
+    id: ID
+    name: String
   }
 
   type Query {
@@ -25,6 +33,9 @@ const typeDefs = gql`
     spotProduct: Product!
     loteryNumbers: [Int!]!
     users: [User]
+    user(id: ID): User
+    profiles: [Profile]
+    profile(id: ID): Profile
   }
 
   type Product {
@@ -47,6 +58,9 @@ const resolvers = {
 
   User: {
     salary: (parent) => parent.salary_real,
+    profile: (user) => {
+      return profiles.find((profile) => profile.id === user.profile.id);
+    }
   },
 
   Query: {
@@ -71,6 +85,13 @@ const resolvers = {
       return numbersArr.sort(increasing);
     },
     users: () => users,
+    user(_, { id }) {
+      return users.find(user => user.id === id) || null;
+    },
+    profiles: () => profiles,
+    profile(_, { id }) {
+      return profiles.find(profile => profile.id === id) || null;
+    }
   }
 };
 
