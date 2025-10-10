@@ -1,0 +1,11 @@
+type Query {
+  hello: String!
+  actualTime: Date!
+  loggedUser: User
+  spotProduct: Product!
+  loteryNumbers: [Int!]!
+  users: [User]
+  user(id: ID): User
+  profiles: [Profile]
+  profile(id: ID): Profile
+}
